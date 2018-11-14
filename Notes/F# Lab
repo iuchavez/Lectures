@@ -1,0 +1,3 @@
+Functions are first class citizens in F#
+The single equals tests equality in some cases
+in F# there is a function called fun

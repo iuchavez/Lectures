@@ -1,0 +1,140 @@
+#Chapter 6 Control Flow
+##Expression (has a value)
+* Variable
+* Literal
+* Function/operator whole args are expressions
+    - prefix, infix, postfix
+    - precedence/order of operations: PEMDAS for arithmetic; AND comes before OR
+    - associativity: how to break ties. Usually done left to right, with one exception.. when you use assignment Ex: 5/2/3 (left to right) x = y = 2 (right associative, right to left)
+
+Ex:
+5
+x
+5 + x
+f(5,x)
+
+##Statement: Mutates the state of the program
+* assignment
+* output/intput
+* function calls
+
+Ex:
+x = y+f(3) changes the state of the program
+print(x+7) does not change the state of the program
+
+##lvalue and rvalue
+y = 5
+^(lvalue)
+
+y = 5   
+    ^(rvalue)
+
+Sometimes we care about a value and sometimes we care about the location. 
+
+                 | lvalue | rvalue |
+    |------------|--------|--------|
+    | variable   | :)     | :)     |
+    | literal    | X      | :)     |
+    | operators  | X      | :)     |
+    | expressions| X      | :)     |
+
+This is usually not allowed, 
+a+b = 7.  what does this mean..?
+(Exception: C++ with operator overloading)
+
+This is a wrong example X
+'switch(x){
+    case A: if x == A
+    case B: else if x == B
+    case C: else if x == C
+    deafaut:
+}'
+
+This is actually a gross misunderstanding of how the switch statment works
+What actually happens from the persepective of the compiler is something called a ..
+
+##Linear Jump Table
+
+'switch(x){
+    case 0: if x == A
+    case 2: else if x == B
+    case 9: else if x == C
+    deafaut:
+}'
+
+<!-- Linear Jump Table -->
+range = max - min
+| 0 | * |----------> case 0: if x == A
+|---|---|
+| 1 |   |
+| 2 | * |----------> case 2: else if x == B
+| 3 |   |
+| 4 |   |
+| 5 |   |
+| 6 |   |
+| 7 |   |
+| 8 |   |
+| 9 | * |----------> case 9: else if x == C
+.
+.
+.
+|999| * |
+
+##At run time  
+999-0 = 999
+x-min read that location from table and jump there. instead of doing a bunch of conditional tests you just do one arithmetic operation and then go to the location in the code to execute it.
+
+##Recursion
+Lets talk about for loops in functional langs.
+We do not have mutation in functional lang
+Most func lang dont have what is needed for "normal looping"
+Therefore we use recursion 
+
+boolean contains (ConsList list, T data){
+    (list == null) return false;
+    if(list.head == data) return true;
+    return contains(list.tail, data);
+}
+
+<!-- HEAP -->
+'           |                   |
+            |-----------------  |
+            |                   |
+            |                   |
+            |                   |
+            |                   |
+            |                   |
+            | data[3] list [*]  |-------------------,
+            | return T          |                   |
+contains    | data[3] list [*]  |-------------V     V
+contains    | data[3] list[*]   | ---> [1] > [2] > [3]
+main.       | X                 | ---^
+                                contains(x,3)
+'
+
+You might ask why we needed to push so much onto the stack..
+
+This is a special form of recursion known as tail-end recursion
+When recursion can be written in this form you can make a really nice optimization. Because it is written in a tail-end way we can make an optimization known as tail-end optimization. 
+
+So it turn out we didnt need to push so much to the stack
+
+<!-- HEAP -->
+|        |
+|        |
+----------
+| data 3 |
+| list[] |
+| ret T  |
+----------
+| X      |
+
+
+##Example of not tail-end recursive
+This is a function that is not tail-recursive and it is far more memory inneficient
+
+'int factorial(int n){
+    if(n ==0 || n == 1)
+        return 1;
+    return n * factorial(n-1);
+}'
